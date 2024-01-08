@@ -11,11 +11,11 @@ for trial = trials
         % Eye size
         eye1 = pt(:,{'coords','x_8','y_8','likelihood_8','x_9',...
             'y_9','likelihood_9'});
-        eye2 = pt(:,{'coords','x_10','y_10','likelihood_10','x_11',...
-            'y_11','likelihood_11'}); %lid
+        % eye2 = pt(:,{'coords','x_10','y_10','likelihood_10','x_11',...
+        %    'y_11','likelihood_11'}); %lid
 
         eye1_d = euc_distance(eye1);
-        eye2_d = euc_distance(eye2);
+        % eye2_d = euc_distance(eye2);
 
         eye_d = pdist(eye_size);
 
@@ -27,7 +27,7 @@ for trial = trials
         l = [pt.likelihood,pt.likelihood_1,pt.likelihood_2,pt.likelihood_3,...
             pt.likelihood_4,pt.likelihood_5,pt.likelihood_6,pt.likelihood_7];
 
-        % Set to 0.6 the min acceptable likelihood
+        % Set to 0.7 the min acceptable likelihood
         ll = l < 0.7;
 
         % Reliability. Since the pupil size is calculated by fitting a
@@ -109,7 +109,12 @@ for trial = trials
 
         % If eye size is at its 50%, measure is most likey not
         % reliable. Eliminate
-        D(eye2_d < 0.6*eye_d) = nan;
+        D(eye1_d < 0.6*eye_d) = nan;
+
+        if sum(isnan(D)) > 0.5*height(pt)
+            log(1,'eye semi-open')
+            continue
+        end
 
         % Remove lonely chuncks of data points (5) and remove outlier
         % chuncks
@@ -128,45 +133,47 @@ for trial = trials
         bad = conn(cellfun(@length,conn) <= 5);
         b_idxs = vertcat(bad{:});
         D(b_idxs) = nan;
+       
+
 
 
         % If eye size is < 70% max eye size, remove data points. If
-        %         eye_thr1 = round(0.7*max(eye2_d));
-        %         blink_idx = find(eye2_d < eye_thr1);
-        %         blink_idx(D < 0.5*max(eye2_d)) = 0;
-        %         pup_diameter(blink_idx) = nan;
-        %         eye_thr2 = round(0.85*max(eye2_d));
-        %         semi_idx = eye2_d <= eye_thr2 & eye2_d > eye_thr1;
+    %         eye_thr1 = round(0.7*max(eye2_d));
+    %         blink_idx = find(eye2_d < eye_thr1);
+    %         blink_idx(D < 0.5*max(eye2_d)) = 0;
+    %         pup_diameter(blink_idx) = nan;
+    %         eye_thr2 = round(0.85*max(eye2_d));
+    %         semi_idx = eye2_d <= eye_thr2 & eye2_d > eye_thr1;
 
 
-        % Interpolate missing values
-        D = fillmissing(D,'makima','MaxGap',30,'EndValues','none');
+    % Interpolate missing values
+    D = fillmissing(D,'makima','MaxGap',30,'EndValues','none');
 
-        % Smooth trace to remove possible outliers
-        % remove super fast changes 2
-        D = hampel(D,30,2);
-        % This also would filled missing values
-        D = movmean(D,5);
+    % Smooth trace to remove possible outliers
+    % remove super fast changes 2
+    D = hampel(D,30,2);
+    % This also would filled missing values
+    D = movmean(D,5);
 
-        % Pupil/ eye rtio
-        pup_ratio = D/eye_d;
+    % Pupil/ eye rtio
+    pup_ratio = D/eye_d;
 
-        % convert to timeseries
-        pup_diameter = D;
-        Time = pupil_time(trial);
-        pup_diameter = timeseries(pup_diameter,Time);
-        pup_ratio = timeseries(pup_ratio,Time);
+    % convert to timeseries
+    pup_diameter = D;
+    Time = pupil_time(trial);
+    pup_diameter = timeseries(pup_diameter,Time);
+    pup_ratio = timeseries(pup_ratio,Time);
 
-        % sometimes the frame rate is not 30fps, but this is later adjusted
-        % when the mtab is created
-        % save
-        trial.save_var("pupil_diameter",pup_diameter)
-        trial.save_var("pupil-eye_ratio",pup_ratio)
+    % sometimes the frame rate is not 30fps, but this is later adjusted
+    % when the mtab is created
+    % save
+    trial.save_var("pupil_diameter",pup_diameter)
+    trial.save_var("pupil-eye_ratio",pup_ratio)
 
-    else
-        log(1,trial.path + " does not have pupil data")
-        continue
-    end
+else
+    log(1,trial.path + " does not have pupil data")
+    continue
+end
 end
 log(1,"Done!")
 end

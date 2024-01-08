@@ -16,16 +16,21 @@ end
 for i = 1:length(trials)
     backwrite(1,'Copying video files to trials:%d/%d', i,length(trials))
     vidp = dir([trials(i).path,'/*pupil_video.mp4']);
-    pupil_path = fullfile(vidp.folder,vidp.name);
-    if isfile(pupil_path)
-        name = vidp.name;
-        cname_idx = strfind(name,'.')-1;
-        cname = name(1:cname_idx);
-        pp_idx = contains(pp,cname);
-        pupv_path = pp(pp_idx);
-        copyfile(pupv_path,trials(i).path)
+    if ~isempty(vidp)
+        pupil_path = fullfile(vidp.folder,vidp.name);
+        if isfile(pupil_path)
+            name = vidp.name;
+            cname_idx = strfind(name,'.')-1;
+            cname = name(1:cname_idx);
+            pp_idx = contains(pp,cname);
+            pupv_path = pp(pp_idx);
+            copyfile(pupv_path,trials(i).path)
+        else
+            warning(trials(i).path + " does not have pupil")
+        end
     else
         warning(trials(i).path + " does not have pupil")
     end
+
 end
 end

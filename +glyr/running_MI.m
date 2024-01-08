@@ -52,6 +52,9 @@ end
 if ~do_combine
     tab1 = mtab(mtab.exp_state == exp_state1 & mtab.seg_category == state1,:);
     tab2 = mtab(mtab.exp_state == exp_state2 & mtab.seg_category == state2,:);
+    if isempty(tab1) || isempty(tab2)
+        return
+    end
 else
     if state1 == "Run" || state1 == "Motion"
         tab1 = mtab(mtab.exp_state == exp_state1 & (mtab.seg_category == "Motion"...

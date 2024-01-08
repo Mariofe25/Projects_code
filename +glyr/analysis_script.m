@@ -18,14 +18,21 @@ tss = glyr.processing.load_dataset("no_GlyR_noIVM");
 tss = glyr.processing.load_dataset("no_GlyR_IVM");
 tss = glyr.processing.load_dataset("no_GlyR_postIVM");
 
-
 %% After processing the rois in the datamanager
 % Process rois int eh datamanger or use functions:
 % Extract donut dff
-glyr.img.extract_neuropil_rois(tss)
+glyr.img.extract_neuropil_rois(tss);
 
 % Calulate ∆F/F, includes neuropil substraction for NS ROIs
-glyr.img.extract_roi_dff_signals(tss)
+glyr.img.extract_roi_dff_signals(tss);
+
+% Inference of spike probability for NS signals. Use Cascade. 
+% Export NS ∆F/F traces for inference (signals already with neuropil
+% subtracted)
+glyr.img.export_ns_dF_traces(tss);
+
+% Import spike prob inference to tss metadata
+glyr.img.import_spikes_prob(tss);
 
 %% Rig proccesing
 
@@ -43,7 +50,7 @@ trials = glyr.rig.get_trials(tss);
 trials = [trials{:}];
 
 % Mark laser and whiskers (use Rig Editor to do this).
-glyr.rig.Rig_Editor(trials)
+glyr.rig.Rig_Editor(trials);
 % Also in the rig editor it is possible to trim the wheel and whisker
 % traces to the laser onset (to sync 2p recordings and behaviour data)
 
@@ -66,11 +73,11 @@ glyr.whisker.whisk_log(trials);
 %--------------------------
 % Pupil Analysis
 % 1. Crop eye area for analysis
-glyr.rig.pupil.pupil_crop(trials)
+glyr.rig.pupil.pupil_crop(trials);
 
 % 2. Make video of cropped area
 for trial = trials
-    glyr.rig.pupil.make_pupil_video(trial)
+    glyr.rig.pupil.make_pupil_video(trial);
 end
 
 % 3. Move videos to analysis folder
@@ -87,22 +94,23 @@ glyr.rig.pupil.move_pup2analysis(trials,pup_path)
 
 % 4.Get tracked pupil size (csv file). Move to trial metadata
 filtered = 1; % use filtered predictions
-pup_path = "/Volumes/GlyR/pupil/no_GlyR";
+pup_path = "/Volumes/GlyR/pupil_videos/noIVM";
 glyr.rig.pupil.move_pup2trial(trials,pup_path,filtered) % Change path if needed)
 
 % Move video with labeled pupils to trials path
 pup_path = "/Volumes/GlyR/pupil/no_GlyR"; % change depending on dataset (noIVM,IVM...)
-glyr.rig.pupil.pupvid_tracked_move2trial(trials,pup_path)
+
+glyr.rig.pupil.pupvid_tracked_move2trial(trials,pup_path);
 
 % 5. Calculate diameter by fitting a circle from coords. Check 
 % the likelihood. Calcualte the average diameter and pupil to eye ratio
 % (to deal with possible diffence in mouse face-camera position)
 % glyr.rig.pupil.pupil_diameter_v1(trials) old version
-glyr.rig.pupil.pupil_diameter(trials)
+glyr.rig.pupil.pupil_diameter(trials);
 
 % 6. Trim pupil diameter trace (to laser onset). Can also be done with
 % doable in RigEditor
-glyr.rig.pupil.trim_pups(trials)
+glyr.rig.pupil.trim_pups(trials);
 
 %% Move data to multitable
 % Multitab gathers all dataset info (TSeries + Rig data). As a table
@@ -149,11 +157,13 @@ glyr.summary_paired_events_tabs;
 glyr.event_features_paired;
 glyr.summary_paired_spikes;
 % glyr.sum_paired_event_tabs;
+
 % Plot summary roi event not paired (by roi type, behav and experimetal state)
 glyr.summary_unpaired_events_plots;
 glyr.summary_unpaired_events_tabs;
 glyr.event_features_unpaired;
 glyr.summary_unpaired_spikes;
+
 % Plot summary of roi events (un/paired) by mouse and by FoV
 glyr.summary_mouse_fov_events;
 

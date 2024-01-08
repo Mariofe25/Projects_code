@@ -1,6 +1,6 @@
 function import_spikes_prob(tss,path,save_name)
 if nargin < 3, save_name = "Spike_prob"; end
-if nargin < 2, path = '/Volumes/GlyR/full_predictions';end
+if nargin < 2, path = '/Volumes/GlyR/spike_predictions/high noise';end
 begonia.logging.log(1,'Importing Spikes probabilities...')
 r = 0;
 tot = length(tss);

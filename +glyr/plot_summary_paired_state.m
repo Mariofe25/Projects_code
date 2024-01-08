@@ -40,6 +40,10 @@ tab_fovs = string(sort(double(tab_fovs)));
 tab_both = arrayfun(@(s) tab(tab.fov == s,:),tab_fovs,'UniformOutput',false);
 tab_both = vertcat(tab_both{:});
 
+if isempty(tab_both)
+    return
+end
+
 % Get total number of rois of each type
 rois_t = unique(tab_both.roi_type);
 n_id = unique(tab_both.roi_short_name);

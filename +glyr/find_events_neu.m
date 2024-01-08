@@ -88,6 +88,7 @@ for trace_idx = 1:size(traces_hp,2)
         peaks(i).y_filt = pks(i);
         peaks(i).prominance = proms(i);
         peaks(i).width_half = widths(i);
+        peaks(i).width_half_sec = widths(i)/fs;
         peaks(i).trace_idx = trace_idx;
         
         

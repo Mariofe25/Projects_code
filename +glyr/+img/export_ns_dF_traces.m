@@ -4,7 +4,8 @@ for ts = tss
     dff = ts.load_var('roi_signals_dff_subtracted');
     dF_traces = vertcat(dff.signal_subtracted_dff{:});
     
-    exp = tss(1).load_var('drug');
+    virus = ts.load_var('virus');
+    exp = ts.load_var('drug');
     path = "/Volumes/GlyR/dff/"; 
     
     % Remove non NS rois
@@ -15,7 +16,7 @@ for ts = tss
         path = fullfile(path,"smooth_");
     end
 
-    path = path + exp;
+    path = path + virus + "/" + exp;
     name = ts.name;
     filename = name + "_dF_traces.mat";
     filename = fullfile(path,filename);
